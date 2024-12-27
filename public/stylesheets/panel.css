@@ -1,0 +1,57 @@
+.name-list{
+    justify-content: left;
+    text-align: left;
+}
+
+.dropdown{
+    justify-content: right;
+    text-align: right;
+    align-items: right;
+}
+
+h1 {
+    text-align: center;
+    background-color: palegoldenrod;
+}
+body {
+    background-color: grey;
+}
+
+
+.table-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 30%; /* Ajustează lățimea după preferințe */
+    margin: 0 auto; /* Centrează tabelul */
+    border: 1px solid #ccc; /* Creează un chenar */
+    border-radius: 8px; /* Colțuri rotunjite pentru chenar */
+    padding: 10px; /* Spațiu în jurul tabelului */
+    background-color: goldenrod;
+  }
+  .table {
+    width: 100%; /* Tabelul să ocupe întreg spațiul containerului */
+    border-collapse: collapse; /* Înlătură spațiile dintre celule */
+  }
+  .table th, .table td {
+    padding: 8px; /* Spațiu interior în celule */
+    text-align: center; /* Text aliniat la stânga */
+    border-bottom: 1px solid #ddd; /* Linie sub fiecare rând */
+  }
+
+
+  #candidate, #vote {
+    display: none;
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  .form-floating {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 30%;
+    margin: 0 auto; /* Centrează tabelul */
+  }
