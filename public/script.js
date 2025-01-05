@@ -33,7 +33,6 @@ if (loginForm) {
     event.preventDefault();
     const username = document.getElementById("Username").value;
     const password = document.getElementById("password").value;
-
     try {
       const response = await fetch("/users/login", {
         method: "POST",
@@ -41,8 +40,9 @@ if (loginForm) {
         body: JSON.stringify({ username, password }),
       });
       if (response.ok) {
-        const message = await response.text();
+        const data = await response.json();
         sessionStorage.setItem("username", username);
+        sessionStorage.setItem("email", data.email);
         window.location.href = "landingpage.html";
       } else if (response.status == 401) {
         alert("Invalid username or password");
@@ -90,39 +90,41 @@ if (username) {
 
 document.getElementById("candidate").addEventListener("click", async () => {
   try {
-    const response = await fetch ("/users/candidates", {
+    const response = await fetch("/users/candidates", {
       method: "POST",
     });
     if (response.ok) {
       await displayCandidates();
     } else {
       const error = await response.text();
-      alert(`Error: ${error}`)
+      alert(`Error: ${error}`);
     }
   } catch (error) {
     console.error(error);
   }
-})
+});
+
 
 document.getElementById("vote").addEventListener("click", async () => {
   try {
     const candidateID = document.querySelector(
-      `input[name="candidate"]:checked`
+      'input[name="candidate"]:checked'
     ).value;
+    const uEmail = sessionStorage.getItem("email");
     const response = await fetch("/candidates/votes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ID: candidateID }),
+      body: JSON.stringify({candidateID, email: uEmail }),
     });
     if (response.ok) {
-      alert("Vote submitted succesfully");
+      alert("Vote submitted successfully!");
       await displayCandidates();
     } else {
-      alert("Failed to submit vote!");
+      alert("You already voted!");
     }
   } catch (error) {
     console.error(error);
   }
-})
+});
