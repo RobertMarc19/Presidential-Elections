@@ -12,7 +12,7 @@ const addToDataBase = (email, username, hashedPassword, callback) => {
   };
 
 const checkDataBase = (username, callback) => {
-    const query = "SELECT password FROM visitors WHERE username = ?";
+    const query = "SELECT * FROM visitors WHERE username = ?";
     connection.query(query, [username], (err, result) => {
         if (err) {
             console.error(err);
@@ -57,4 +57,18 @@ const updateVotes = (candidateID, callback) => {
     });
   };
 
-  module.exports = {addToDataBase, checkDataBase, selectFromDataBase, addCandidatesAndSortDesc, updateVotes};
+  const addVoters = (email, callback) => {
+    const query = "INSERT INTO voters (email) VALUES (?)";
+    connection.query(query, [email], (err, result) => {
+        callback(err, result);
+    })
+  }
+
+  const checkIfVoted = (email, callback) => {
+    const query = "SELECT * FROM voters WHERE email = ?";
+    connection.query(query, [email], (err, result) => {
+        callback(err, result);
+    })
+  }
+
+  module.exports = {addToDataBase, checkDataBase, selectFromDataBase, addCandidatesAndSortDesc, updateVotes, addVoters, checkIfVoted};
