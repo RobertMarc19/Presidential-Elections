@@ -5,10 +5,7 @@ const bcrypt = require("bcrypt");
 const queries = require("../helpers/queries");
 
 router.post("/users/register", async (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  const email = req.body.email;
-
+  const {username, password, email} = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     queries.addToDataBase(email, username, hashedPassword, (err) => {
@@ -25,19 +22,18 @@ router.post("/users/register", async (req, res) => {
 });
 
 router.post("/users/login", (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
+  const {username, password} = req.body;
   queries.checkDataBase(username, async (err, results) => {
     if (results.length === 0) {
       console.error("User not found");
       return res.status(401).send("Invalid username or password");
     }
     const hashedPassword = results[0].password;
-
+    const userEmail = results[0].email;
     try {
       const match = await bcrypt.compare(password, hashedPassword);
       if (match) {
-        res.send("Login succesful!");
+        return res.json({message: "Login succesful", email: userEmail})
       } else {
         res.status(401).send("Invalid password");
       }
@@ -62,19 +58,32 @@ router.post("/users/candidates", (req, res) => {
   queries.addCandidatesAndSortDesc((err, result) => {
     if (err) {
       console.error("Could not copy data from visitors to candidates:", err);
-      return res.status(500).send("Error copying data");
+      return res.status(500).send("You're already a candidate!");
     }
     res.send("Data copied successfully!");
   });
 });
 
 router.post("/candidates/votes", (req, res) => {
-  const candidateID = req.body.ID;
-  queries.updateVotes(candidateID, (err, result) => {
+  const {candidateID, email} = req.body;
+  queries.checkIfVoted(email, (err, result) => {
     if (err) {
-      console.error(err);
+      console.error("Error checking voter in database ", err);
     }
-    res.send("Table updated!");
+    if (result.length > 0) {
+      return res.status(400).json({ message: "You have already voted!" });
+    }
+    queries.addVoters(email, (err, result) => {
+      if (err) {
+        console.error("Couldn't add the voter in database ", err);
+      }
+      queries.updateVotes(candidateID, (err, result) => {
+        if (err) {
+          console.error(err);
+        }
+        res.send("Table updated!");
+      });
+    });
   });
 });
 
